@@ -8,7 +8,7 @@ header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
 header("Access-Control-Allow-Headers: X-Requested-With");
 date_default_timezone_set('Asia/Jakarta');
 
-
+print_r($_SERVER);die();
 require 'vendor/autoload.php';
 
 $mongo  = new \MongoDB\Client($_SERVER['MONGODB_URI']);
