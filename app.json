@@ -1,0 +1,20 @@
+{
+  "name": "Heroku with HerokuRedis",
+  "description": "heroku php & redis",
+  "keywords": [
+    "redis",
+    "heroku-redis",
+    "heroku"
+  ],
+  "repository": "https://github.com/kopetgroup/heroku-php-redis.git",
+  "success_url": "/",
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "free"
+    }
+  },
+  "addons": [
+    "heroku-redis"
+  ]
+}
