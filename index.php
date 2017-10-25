@@ -17,9 +17,8 @@ if(isset($_GET['set'])){
   $data = json_decode(file_get_contents('php://input'));
   $value = $data->value;
 
-  if(is_array($value)){
     $value = json_encode($value);
-  }
+
   $r = $client->set($data->key, $value);
   if(isset($r)){
     $res = [
