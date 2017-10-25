@@ -37,8 +37,8 @@ if(isset($_GET['set'])){
 
   $data = json_decode(file_get_contents('php://input'));
   $value = $data->value;
-  foreach((array)$value as $k => $v){
-    echo $k.' - '.$v;
+  foreach((array)$value as $k){
+    print_r($k);
   //  $client->hset($data->key, 'name', 'arslan');
   }
   //$r = $client->get($_GET['get']);
