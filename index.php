@@ -33,6 +33,8 @@ if(isset($_GET['set'])){
   $r = $client->get($_GET['get']);
   $res = $r;
 
+}elseif(isset($_GET['hgetall'])){
+  $res = $client->hgetall($_GET['get']);
 }elseif(isset($_GET['hset'])){
 
   $data = json_decode(file_get_contents('php://input'));
