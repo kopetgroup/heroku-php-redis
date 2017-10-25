@@ -21,7 +21,7 @@ if(isset($_GET['set'])){
     $value = json_encode($value);
   }
   */
-  $r = $client->set($data->key, $value);
+  $r = $client->set($data->key,json_encode($value));
   if(isset($r)){
     $res = [
       'status' => 'success',
@@ -31,24 +31,7 @@ if(isset($_GET['set'])){
 }elseif(isset($_GET['get'])){
 
   $r = $client->get($_GET['get']);
-  $res = $r;
-
-//}elseif(isset($_GET['hgetall'])){
-  //$res = $client->hgetall($_GET['get']);
-}elseif(isset($_GET['hset'])){
-
-  $data = json_decode(file_get_contents('php://input'));
-  $value = $data->value;
-  foreach((array)$value as $k){
-    $k = (array) $k;
-    foreach($k as $a => $b){
-      $client->hset($data->key,$a,$b);
-    }
-  }
-  $res = [
-    'status' => 'success',
-    'key' => $data->key
-  ];
+  $res = ['data'=>json_decode($r)];
 
 }elseif(isset($_GET['del'])){
 
