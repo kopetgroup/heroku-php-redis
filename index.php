@@ -31,7 +31,9 @@ if(isset($_GET['set'])){
 }elseif(isset($_GET['get'])){
 
   $r = $client->get($_GET['get']);
-  $res = $r;
+  $res = [
+    'data' => $r
+  ];
 
 }elseif(isset($_GET['del'])){
 
