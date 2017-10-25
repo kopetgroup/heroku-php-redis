@@ -14,11 +14,9 @@ $client = new Predis\Client($_SERVER['REDIS_URL']);
 if(isset($_GET['set'])){
 
   //ambil data $key-> & $value->
-  $data = json_decode(file_get_contents('php://input'));
-  $value = $data->value;
-
-    $value = json_encode($value);
-
+  $data   = json_decode(file_get_contents('php://input'));
+  $value  = $data->value;
+  $value  = base64_encode($value);
   $r = $client->set($data->key, $value);
   if(isset($r)){
     $res = [
@@ -29,7 +27,7 @@ if(isset($_GET['set'])){
 }elseif(isset($_GET['get'])){
 
   $r = $client->get($_GET['get']);
-  $res = $r;
+  $res = base64_decode($r);
 
 }elseif(isset($_GET['del'])){
 
