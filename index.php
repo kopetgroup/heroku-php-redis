@@ -40,13 +40,13 @@ if(isset($_GET['set'])){
   foreach((array)$value as $k){
     $k = (array) $k;
     foreach($k as $a => $b){
-      print_r($a);
-      print_r($b);
+      $client->hset($data->key,$a,$b);
     }
-  //  $client->hset($data->key, 'name', 'arslan');
   }
-  //$r = $client->get($_GET['get']);
-  //$res = $r;
+  $res = [
+    'status' => 'success',
+    'key' => $data->key
+  ];
 
 }elseif(isset($_GET['del'])){
 
