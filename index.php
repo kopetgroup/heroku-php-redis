@@ -1,92 +1,42 @@
 <?php
 header('Content-Type: application/json');
 header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: *");
-header('Access-Control-Allow-Credentials: true');
-header('Access-Control-Max-Age: 86400');    // cache for 1 day
-header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
-header("Access-Control-Allow-Headers: X-Requested-With");
 date_default_timezone_set('Asia/Jakarta');
 
 require 'vendor/autoload.php';
+$_SERVER['REDIS_URL'] = 'redis://kopet1234:kopet1234@redis-12525.c1.us-east1-2.gce.cloud.redislabs.com:12525';
+//$_SERVER['REDIS_URL'] = 'redis://rediscloud:j5UCD3tVTCkx29F2saIM4vowinbihf1T@redis-16492.c16.us-east-1-2.ec2.cloud.redislabs.com:16492';
+
 $client = new Predis\Client($_SERVER['REDIS_URL']);
+$data = json_decode(file_get_contents('php://input'), true);
+$key = 'albaqarah_'.$_GET['domain'];
 
-if(isset($_GET['set'])){
+$ers = $client->lrange($key,95,-1);
+$tt = [];
+foreach($ers as $e){
+  $tt[] = json_decode($e);
+}
+echo json_encode($tt);
+die();
+if(isset($data)){
 
-  //ambil data $key-> & $value->
-  $data = json_decode(file_get_contents('php://input'));
-  $value = $data->value;
-  /*
-  if(is_array($value)){
-    $value = json_encode($value);
+  //set data
+  $i = $client->rpush($key,json_encode($data));
+
+  //count then delete
+  $ll = $client->llen($key);
+  if($ll>=10){
+    $client->lpop($key);
   }
-  */
-  $r = $client->set($data->key,json_encode($value));
-  if(isset($r)){
-    $res = [
-      'status' => 'success',
-      'msg'   => $data->key
-    ];
-  }
-}elseif(isset($_GET['get'])){
-
-  $r = $client->get($_GET['get']);
-  $res = ['data'=>json_decode($r)];
-
-}elseif(isset($_GET['del'])){
-
-  $r = $client->del($_GET['del']);
-  $res = $r;
-
-}elseif(isset($_GET['all'])){
-
-  $r = $client->keys('*');
-  $res = $r;
+  echo json_encode(
+    ['insert' => $i]
+  );
 
 }else{
-  
-  $r = shell_exec('free -m');
-  $r = str_replace(array("\n","\r\n","\r","\t",'    ','   ','  '),' ',$r);
-
-  $r = explode('cached',$r);
-  $r = implode($r);
-  $r = str_replace(array("\n","\r\n","\r","\t",'    ','   ','  '),' ',$r);
-  $r = explode('Mem: ',$r);
-  $r = $r[1];
-  $r = explode(' ',$r);
-
-  $total  = number_format($r[0]).'Mb';
-  $usage  = number_format($r[1]).'Mb';
-  $free   = number_format($r[2]).'Mb';
-
-  $uptime = shell_exec("uptime");
-  $uptime = str_replace(array("\n","\r\n","\r","\t",'    ','   ','  '),' ',$uptime);
-  $uptime = explode(',',$uptime);
-  $uptime = $uptime[0];
-
-  $percent  = $r[1]/$r[0];
-
-  if($_SERVER['HTTP_HOST']=='localhost'){
-    $persen   = mt_rand(1,100);
-  }else{
-    $persen   = number_format( $percent * 100, 2 );
+  $ers = $client->lrange($key,0,-1);
+  $tt = [];
+  foreach($ers as $e){
+    $tt[] = json_decode($e);
   }
-
-  $res = [
-    'status' => 'good',
-    'dataset' => count($dataset),
-    "versi"             => trim(file_get_contents('version')),
-    "name"              => str_replace('.herokuapp.com','',$_SERVER['HTTP_HOST']),
-    "node"              => gethostname(),
-    "server_name"       => $_SERVER['HTTP_HOST'],
-    "server_software"   => $_SERVER['SERVER_SOFTWARE'],
-    "remote_addr"       => $_SERVER['REMOTE_ADDR'],
-    "memtotal"          => $total,
-    "memusage"          => $usage,
-    "memfree"           => $free,
-    "mempercent"        => $persen,
-    "uptime"            => trim(str_replace('up  ','',$uptime))
-  ];
+  echo json_encode($tt);
 }
-
-echo json_encode($res);
